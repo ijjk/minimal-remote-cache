@@ -1,0 +1,13 @@
+{
+  "name": "minimal-remote-cache",
+  "version": "0.0.1",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "JJ Kasper <jj@jjsweb.site>",
+  "license": "MIT",
+  "dependencies": {
+    "async-sema": "^3.1.1"
+  }
+}
