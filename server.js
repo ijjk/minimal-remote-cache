@@ -120,7 +120,6 @@ async function main() {
             }
             return;
           }
-          console.log(`artifact ${artifactName} not in cache`);
         }
 
         if (req.method === "PUT") {
