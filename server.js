@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
-const { Sema } = require("async-sema");
+const { Sema } = require("./vendored/async-sema");
 
 async function main() {
   const {
