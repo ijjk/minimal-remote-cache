@@ -81,10 +81,10 @@ async function main() {
 
   const server = http.createServer(async (req, res) => {
     try {
-      await cleanupEntries()
-      
+      await cleanupEntries();
       // authorize request with token
       if (req.headers["authorization"] !== `Bearer ${TURBO_TOKEN}`) {
+        console.log(`Forbidden for ${req.socket.remoteAddress} ${req.url}`);
         res.statusCode = 403;
         res.end("Forbidden");
         return;
@@ -106,6 +106,13 @@ async function main() {
         const artifactName = parsedUrl.pathname.substring(artifactsPath.length);
 
         if (req.method === "GET" || req.method === "HEAD") {
+          console.log(
+            req.method,
+            "-",
+            req.url,
+            cacheEntries.has(artifactName) ? "HIT" : "MISS"
+          );
+
           if (cacheEntries.has(artifactName)) {
             if (req.method === "HEAD") {
               res.statusCode = 200;
@@ -123,13 +130,19 @@ async function main() {
         }
 
         if (req.method === "PUT") {
+          console.log(req.method, '-', req.url);
           await new Promise((resolve, reject) => {
-            const writeStream = fs.createWriteStream(
-              path.join(storageDir, artifactName)
-            );
+            const outputPath = path.join(storageDir, artifactName);
+            const writeStream = fs.createWriteStream(outputPath);
             writeStream.on("error", (err) => {
               console.log(`Failed to set artifact ${artifactName}`, err);
               res.end("");
+
+              try {
+                fs.unlinkSync(outputPath);
+              } catch (_) {
+                // attempted cleanup
+              }
               reject();
             });
             writeStream.on("close", () => {
